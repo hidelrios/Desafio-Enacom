@@ -78,12 +78,10 @@ def main():
                   decision_variable[project] for project in projects)
 
     # Restrição: Orçamento total
-    # prob += lpSum(expected_cost_info[project] * decision_variable[project] for project in projects) <= 2400000
     prob += constraint_total_budget(projects=projects,
                                     decision_variable=decision_variable, expected_cost_info=expected_cost_info)
 
     # Restrição: Pelo menos 1 investimento de risco alto
-    # prob += lpSum(decision_variable[project] for project in projects if investment_risk[project] == 'Alto') >= 1
     prob += constraint_at_least_one_high_risk_investment(
         projects=projects, decision_variable=decision_variable, investment_risk=investment_risk)
 
