@@ -30,40 +30,7 @@ def constraint_maximum_cost_for_high_risk_investments(projects: list, decision_v
     return sum(expected_cost_info[i] * decision_variable[i] for i in range(len(projects)) if investment_risk[i] == 'Alto') <= cost_maximum_high
 
 
-def main():
-
-    # Carrega informações
-    df = pd.read_csv(r'D:\Projetos\Desafio Enacom\teste.csv', sep=';')
-
-    # Retorno esperado de cada projeto
-    expect_return_info = []
-
-    # Custo de cada projeto
-    expected_cost_info = []
-
-    # Risco do investimento
-    investment_risk = []
-
-    # Projetos
-    projects = []
-
-    # Dados de exemplo
-    total_budget = 2400000
-    low_maximum_cost = 1200000
-    average_maximum_cost = 1500000
-    cost_maximum_high = 900000
-
-    # Tratamento das informações do arquivo
-    for index, line in df.iterrows():
-        project = line['Descrição']
-        expect_return = line['Retorno esperado (R$)']
-        expect_cost = line['Custo do investimento (R$)']
-        risk = line['Risco do investimento']
-
-        projects.append(project)
-        expect_return_info.append(expect_return)
-        expected_cost_info.append(expect_cost)
-        investment_risk.append(risk)
+def optimizer(projects: list, expect_return_info: list, expected_cost_info: list, investment_risk: list, total_budget: int, cost_maximum_high: int, low_maximum_cost: int, average_maximum_cost: int):
 
     # Cria o problema de maximização
     problem = LpProblem("Otimização de Projetos", LpMaximize)
@@ -118,14 +85,54 @@ def main():
     status = problem.solve()
 
     if status == 1:  # Problema resolvido com sucesso
-        # Imprimir a solução
         print("Solução encontrada:")
         for i, value in enumerate(projects):
             if xi[i].value() == 1:
                 print(
                     f"Projeto {i} - {value}: Retorno Esperado = {expect_return_info[i]}, Custo = {expected_cost_info[i]}, Risco = {investment_risk[i]}")
+        return "Problema resolvido com sucesso"
     else:
-        print("Não foi encontrada uma solução ótima.")
+        return "Não foi encontrada uma solução ótima"
+
+
+def main():
+
+    # Carrega informações
+    df = pd.read_csv(r'D:\Projetos\Desafio Enacom\teste.csv', sep=';')
+
+    # Retorno esperado de cada projeto
+    expect_return_info = []
+    
+    # Custo de cada projeto
+    expected_cost_info = []
+
+    # Risco do investimento
+    investment_risk = []
+
+    # Projetos
+    projects = []
+
+    # Dados de exemplo
+    total_budget = 2400000
+    low_maximum_cost = 1200000
+    average_maximum_cost = 1500000
+    cost_maximum_high = 900000
+
+    # Tratamento das informações do arquivo
+    for index, line in df.iterrows():
+        project = line['Descrição']
+        expect_return = line['Retorno esperado (R$)']
+        expect_cost = line['Custo do investimento (R$)']
+        risk = line['Risco do investimento']
+
+        projects.append(project)
+        expect_return_info.append(expect_return)
+        expected_cost_info.append(expect_cost)
+        investment_risk.append(risk)
+
+    optimizer(projects=projects, expect_return_info=expect_return_info, expected_cost_info=expected_cost_info, investment_risk=investment_risk,
+               total_budget=total_budget, cost_maximum_high=cost_maximum_high, low_maximum_cost=low_maximum_cost, average_maximum_cost=average_maximum_cost)
+
 
 
 if __name__ == '__main__':
