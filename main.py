@@ -1,4 +1,4 @@
-from pulp import LpMaximize, LpProblem, LpStatus, LpVariable
+from pulp import *
 import pandas as pd
 
 
@@ -88,8 +88,9 @@ def optimizer(projects: list, expect_return_info: list, expected_cost_info: list
         print("Solução encontrada:")
         for i, value in enumerate(projects):
             if xi[i].value() == 1:
-                print(
-                    f"Projeto {i} - {value}: Retorno Esperado = {expect_return_info[i]}, Custo = {expected_cost_info[i]}, Risco = {investment_risk[i]}")
+                print(f"Projeto {i} - {value}: Retorno Esperado = {expect_return_info[i]}, Custo = {expected_cost_info[i]}, Risco = {investment_risk[i]}")
+        print("Retorno Total Esperado:", problem.objective.value())
+
         return "Problema resolvido com sucesso"
     else:
         return "Não foi encontrada uma solução ótima"
@@ -98,7 +99,7 @@ def optimizer(projects: list, expect_return_info: list, expected_cost_info: list
 def main():
 
     # Carrega informações
-    df = pd.read_csv(r'D:\Projetos\Desafio Enacom\teste.csv', sep=';')
+    df = pd.read_csv(r'D:\Projetos\Desafio-Enacom\teste.csv', sep=';')
 
     # Retorno esperado de cada projeto
     expect_return_info = []
@@ -113,7 +114,7 @@ def main():
     projects = []
 
     # Dados de exemplo
-    total_budget = 2400000
+    total_budget = 1400000
     low_maximum_cost = 1200000
     average_maximum_cost = 1500000
     cost_maximum_high = 900000
@@ -125,10 +126,14 @@ def main():
         expect_cost = line['Custo do investimento (R$)']
         risk = line['Risco do investimento']
 
+
         projects.append(project)
         expect_return_info.append(expect_return)
-        expected_cost_info.append(expect_cost)
         investment_risk.append(risk)
+        expected_cost_info.append(expect_cost)
+
+
+    print(expected_cost_info)
 
     optimizer(projects=projects, expect_return_info=expect_return_info, expected_cost_info=expected_cost_info, investment_risk=investment_risk,
                total_budget=total_budget, cost_maximum_high=cost_maximum_high, low_maximum_cost=low_maximum_cost, average_maximum_cost=average_maximum_cost)
